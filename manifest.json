@@ -1,0 +1,9 @@
+{
+  "name": "時間割通知アプリ",
+  "short_name": "時間割通知",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#2b8cff",
+  "icons": []
+}
