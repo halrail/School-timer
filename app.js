@@ -160,6 +160,55 @@ function clearScheduledTimers() {
   }
 }
 
+// JSONエクスポート
+document.getElementById('export').addEventListener('click', () => {
+  const timetable = JSON.parse(localStorage.getItem('timetable') || '[]');
+  const satWeeks = JSON.parse(localStorage.getItem('satEnabledWeeks') || '[]');
+
+  const data = {
+    timetable,
+    satEnabledWeeks: satWeeks
+  };
+
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'timetable_backup.json';
+  a.click();
+
+  URL.revokeObjectURL(url);
+});
+
+// JSONインポート
+document.getElementById('import').addEventListener('change', async (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+
+  const text = await file.text();
+  let data;
+
+  try {
+    data = JSON.parse(text);
+  } catch {
+    alert('JSONファイルが壊れています');
+    return;
+  }
+
+  if (!data.timetable || !data.satEnabledWeeks) {
+    alert('このファイルは正しいバックアップではありません');
+    return;
+  }
+
+  // 保存
+  localStorage.setItem('timetable', JSON.stringify(data.timetable));
+  localStorage.setItem('satEnabledWeeks', JSON.stringify(data.satEnabledWeeks));
+
+  alert('インポート完了！ページを再読み込みします');
+  location.reload();
+});
+
 // 通知スケジューラー（5分前通知、土曜は有効週のみ）
 function scheduleAllNotifications() {
   const data = JSON.parse(localStorage.getItem('timetable') || '[]');
