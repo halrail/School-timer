@@ -209,7 +209,7 @@ document.getElementById('import').addEventListener('change', async (e) => {
   location.reload();
 });
 
-// 通知スケジューラー（5分前通知、土曜は有効週のみ）
+// 通知スケジューラー（n分前通知、土曜は有効週のみ）
 function scheduleAllNotifications() {
   const data = JSON.parse(localStorage.getItem('timetable') || '[]');
   const satEnabledWeeks = JSON.parse(localStorage.getItem('satEnabledWeeks') || '[]');
@@ -237,7 +237,7 @@ function scheduleAllNotifications() {
       // set to class start time
       target.setHours(item.hour, item.minute, 0, 0);
       // subtract 5 minutes for notification
-      target.setMinutes(target.getMinutes() - 5);
+      target.setMinutes(target.getMinutes() - 10);
 
       // If target is in the past (shouldn't be because diff handles), ensure it's next week
       if (target.getTime() <= now.getTime()) {
@@ -248,12 +248,12 @@ function scheduleAllNotifications() {
 
       // 1回目の通知を setTimeout でスケジュール
       const toId = setTimeout(() => {
-        reg.showNotification(`5分後：${item.subject}`, {
+        reg.showNotification(`10分後：${item.subject}`, {
           body: item.items ? `持ち物：${item.items}` : '忘れ物に注意！',
           tag: `${item.day}-${item.period}`
         });
 
-        // 以降は毎週同じ曜日・時刻（5分前）で繰り返す
+        // 以降は毎週同じ曜日・時刻（10分前）で繰り返す
         const intervalId = setInterval(() => {
           // 土曜の場合は毎週ではなく、実行時の週が有効か確認する
           if (item.day === 6) {
@@ -262,7 +262,7 @@ function scheduleAllNotifications() {
             if (!enabled.includes(w)) return;
           }
 
-          reg.showNotification(`5分後：${item.subject}`, {
+          reg.showNotification(`10分後：${item.subject}`, {
             body: item.items ? `持ち物：${item.items}` : '忘れ物に注意！',
             tag: `${item.day}-${item.period}`
           });
